@@ -2,23 +2,22 @@
 
 ## Vorbereitung
 
-- nutzer immer die chrome extension
-- der Nutzer muss sich auf https://events.raceresult.com/ anmelden
-- Frage nach der eventid, falls der Nutzer diese nicht angegeben hat
+ * erstelle eine Python Virtualenv in .venv mit Python 3.14
+ * installiere das Modul https://github.com/Karlsruher-Lemminge/py-raceresult
+ * der API Key ist in .env, falls nicht frage den Nutzer
+ * Frage den Nutzer nach der zu bearbeitenden eventid
+ * rufe die Basisdaten zur eventid ab
+ * Frage den Nutzer, ob das das richtig Event ist
+ * dann führe die vom Nutzer angefragten Prüfungen oder Änderungen durch
 
-gehe dann auf:
+## Tools
 
-https://events.raceresult.com/ 
+Für alle Prüfungen nutze die py-raceresult API. Der API Key liegt in .env mit namen API_KEY.
 
-und lasse den Nutzer sich anmelden. 
-Nach Anmeldung gehe auf die Seite des jeweiligen Event:
-
-https://events.raceresult.com/_eventid
-
-behalte dabei aber die get parameter bei die vorher verwendet wurden
-
-Stelle immer sicher, das die URL mit https://events.raceresult.com/_eventid/ beginnt. Die eventid darf sich nie ändern.
-Breche jegliche Verarbeitung ab, wenn die eventid sich geändert hat
+Ausgenommen die Werte im my.raceresult.com Menü. Diese müssen mittels Chrome Browser MCP geprüft werden.
+Dazu muss sich der Nutzer auf https://events.raceresult.com/ anmelden.
+Stelle im Chrome Browser immer sicher, das die URL mit https://events.raceresult.com/_<eventid> anfängt.
+Breche die Verarbeitung ab, falls das nicht mehr der Fall ist
 
 ## Allgemein
 
@@ -37,12 +36,6 @@ Datum Ultimo ist 31.12.2100 23:59:59.
 Bei aktiv von ist immer Uhrzeit 00:00:00 gesetzt.
 
 Bei "bis" immer die Uhrzeit 23:59:59.
-
-## Menüstruktur
-
-Die Menüstruktur kann mehrfach dieselben Texte enthalten.
-Mit ** eingerahmte Texte sind immer die aus dem Hauptmenü.
-Stelle immer sicher, das Du dich auch im korrekten Menü befindest.
 
 ## Variablen
 
@@ -115,7 +108,7 @@ Es finden keine Änderungen an der Veranstaltung statt.
   - Veranstaltung
     - ermittle unter "Veranstaltungsdatum von" das Datum der Veranstaltung
     - ermittle unter "Veranstaltungsname" den Namen der Veranstaltung
-    - ermittle ter Abrechnungsmodus den Modus, sollte echte Veranstaltung sein
+    - ermittle ter Abrechnungsmodus den Modus, sollte echte Veranstaltung sein. Das entspricht einem leeren Wert
   - Altersklassen: ermittle ob nach Geburtsjahr oder Geburtsdatum
 - **Anmelde-Formulare**
   - gehe unter Anmelde-Formulare jedes Formular durch

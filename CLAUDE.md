@@ -19,6 +19,10 @@ Dazu muss sich der Nutzer auf https://events.raceresult.com/ anmelden.
 Stelle im Chrome Browser immer sicher, das die URL mit https://events.raceresult.com/_<eventid> anfängt.
 Breche die Verarbeitung ab, falls das nicht mehr der Fall ist
 
+## py-raceresult API Beispiel Code
+
+Siehe API_USAGE.md
+
 ## Allgemein
 
 Für jede Veranstaltung muss vorher festgelegt werden, wann die Anmeldung öffnet <start-anmeldung>.
@@ -153,3 +157,5 @@ Es finden keine Änderungen an der Veranstaltung statt.
   - Gutscheine: keine Einträge vorhanden
 
 Gebe alle geprüften Werte aus. Markiere die wo es inkonsitente Werte gibt.
+
+

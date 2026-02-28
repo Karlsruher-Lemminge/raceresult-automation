@@ -8,8 +8,10 @@ Dieser Skill unterstützt bei der Bearbeitung und Validierung von Sportveranstal
 
 ## Voraussetzungen
 
-- **Chrome Extension**: Der Skill nutzt die Playwright Chrome Extension für Browser-Automatisierung
-- **Anmeldung**: Gültiger Account auf events.raceresult.com
+- **Python API**: Für programmatische Zugriffe wird die [py-raceresult](https://github.com/Karlsruher-Lemminge/py-raceresult) Bibliothek verwendet
+- **API Key**: Ein gültiger API-Schlüssel in der `.env`-Datei (`API_KEY=...`)
+- **Chrome Extension**: Die Playwright Chrome Extension wird für Browser-Automatisierung genutzt, wo kein API-Zugriff möglich ist (insbesondere my.raceresult.com Einstellungen)
+- **Anmeldung**: Gültiger Account auf events.raceresult.com (für Browser-Zugriff)
 - **Event-ID**: Die numerische ID der zu bearbeitenden Veranstaltung
 
 ## Hauptfunktionen
@@ -67,8 +69,21 @@ Raceresult-Variablen werden in eckigen Klammern verwendet:
    - "Veranstaltung editieren" für kopierte Vorjahresveranstaltungen
    - "Veranstaltung prüfen" für Validierung vor Freischaltung
 
+## Technischer Aufbau
+
+### Zugriffswege
+
+| Bereich | Zugriff |
+|---------|---------|
+| Grundeinstellungen, Formulare, E-Mail/SMS | py-raceresult Python API |
+| my.raceresult.com Einstellungen | Playwright Browser (Chrome) |
+| Teilnehmer/Finanzen löschen | Playwright Browser (Chrome) |
+
+Die Python API wird bevorzugt eingesetzt. Der Browser-Zugriff erfolgt nur für Bereiche, die über die API nicht erreichbar sind.
+
 ## Hinweise
 
+- Für die API wird eine Python-Virtualenv in `.venv` mit der py-raceresult Bibliothek benötigt
 - Der Skill navigiert durch die Menüstruktur des Raceresult-Backends
 - Bei mehrdeutigen Menüpunkten wird das Hauptmenü (mit ** markiert) priorisiert
 - Destruktive Aktionen (Löschen) erfordern explizite Nutzerbestätigung

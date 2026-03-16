@@ -12,12 +12,14 @@
 
 ## Tools
 
-Für alle Prüfungen nutze die py-raceresult API. Der API Key liegt in .env mit namen API_KEY.
+Für alle Prüfungen nutze die py-raceresult API. Der API Key liegt in .env mit namen API\_KEY.
 
 Ausgenommen die Werte im my.raceresult.com Menü. Diese müssen mittels Chrome Browser MCP geprüft werden.
 Dazu muss sich der Nutzer auf https://events.raceresult.com/ anmelden.
 Stelle im Chrome Browser immer sicher, das die URL mit https://events.raceresult.com/_<eventid> anfängt.
 Breche die Verarbeitung ab, falls das nicht mehr der Fall ist
+
+Für Startnummern Neuvergabe nutze den Skill py-raceresult-bib-assignment
 
 ## py-raceresult API Beispiel Code
 

@@ -39,6 +39,8 @@ Listen-Veröffentlichen: nur die Liste beginnend mit "Teilnehmerliste ABC" soll 
 
 ## Interner Swim & Run
 
+Lade den Skill pursuit-race-wave-optimizatio
+
 Die Teilnehmerdaten enthalten Angaben zu Bestzeiten. Die Bestzeiten sind auf das Format MM:SS zu normalisieren.
 Feld ist Textfeld. Es kann aufgrund der Eingabe der Teilnehmer zu Abweichungen kommen.
 

@@ -37,3 +37,23 @@ Das <ende-anmeldung> ist 7 Tage vor dem Veranstaltungsdatum um 23:59:59.
 Chip-File: mindestens 400 Einträge, wenn das heutige Datum drei Tage Woche vor Veranstaltungsbeginn ist. Sonst leer und keine Einträge
 Listen-Veröffentlichen: nur die Liste beginnend mit "Teilnehmerliste ABC" soll Aktiv sein
 
+## Interner Swim & Run
+
+Die Teilnehmerdaten enthalten Angaben zu Bestzeiten. Die Bestzeiten sind auf das Format MM:SS zu normalisieren.
+Feld ist Textfeld. Es kann aufgrund der Eingabe der Teilnehmer zu Abweichungen kommen.
+
+Rechne aus den angegebenen Bestzeiten die jeweiligen Wettkampfzeiten aus basierend auf der Länge bei den Wettkämpfen.
+Rechne dazu auch eine Zielzeit basierend auf den Startzeiten aus.
+
+Folgende Rahmenbedingungen:
+- es gibt 5 Schwimmbahnen
+- maximal zwei Teilnehmer pro Bahn
+- Startnummer ergibt schwimmbahn, Schwimmer mit ungerader Startnummer und der direkt drauf folgende gerade Startnummer sind auf einer Bahn
+
+Die Startnummern Neuvergabe erfolgt nach folgender Logik:
+
+- die langsamsten Schwimmer startet im Normalfall in der ersten Welle des Wettkampfes
+- der lange Wettkampf startet vor dem kurzen Wettkampf
+- auf einer Bahn sollen möglichst gleichschnelle Schwimmer starten
+- die Schwimmer sollen möglichst gleichmaessig auf die Bahnen verteilt werden
+- die Finishzeit des letzten Teilnehmers soll möglichst früh sein, schnelle Schwimmer mit deutlich langsamer Laufzeit starten falls notwendig dazu in einer früheren Welle

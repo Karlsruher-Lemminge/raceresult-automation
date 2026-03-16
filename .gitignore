@@ -4,3 +4,4 @@
 .env
 *.py
 .playwright-mcp/
+20*/

@@ -4,3 +4,5 @@
 *.py
 .playwright-mcp/
 20*/
+*.json
+node_modules/

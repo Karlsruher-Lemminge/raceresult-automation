@@ -25,6 +25,16 @@ Für Startnummern Neuvergabe nutze den Skill py-raceresult-bib-assignment
 
 Siehe API_USAGE.md
 
+## Raceresult Felder, Ausdrücke und Funktionen
+
+Wenn du Feldnamen, Funktionen, Filterausdrücke, Operatoren oder Formatierungsangaben für Raceresult benötigst oder prüfen möchtest, nutze die Dokumentation in `raceresult-kb/`.
+
+Die Übersicht aller verfügbaren Dateien und deren Inhalte findest du in:
+
+**`raceresult-kb/INDEX.md`**
+
+Dort ist beschrieben welche Datei welche Felder, Funktionen und Konzepte dokumentiert (z.B. Feldnamen für Zeitfelder → `7174-Felder.md`, String-Funktionen → `2057-Funktionen.md`, Filter-Syntax → `2109-Filter.md`).
+
 ## Allgemein
 
 Für jede Veranstaltung muss vorher festgelegt werden, wann die Anmeldung öffnet <start-anmeldung>.

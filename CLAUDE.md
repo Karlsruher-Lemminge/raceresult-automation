@@ -86,16 +86,16 @@ Veranstaltungsdatum: [Veranstaltung.Datum]
   - my.raceresult.com aktivieren
     - "Veranstaltung im my.raceresult.com Portal anzeigen" aktiv
     - "Veranstaltung im Veranstaltungskalender anzeigen" aktiv bei öffentlichen Veranstaltungen, inaktiv bei internen
-  - Seite "Anmeldung" aktivieren von Jahresanfang bis Jahresende des Veranstaltungsjahres
-  - Seite "Teilnehmer"
+  - Tab "Anmeldung" aktivieren von Jahresanfang bis Tag Anmeldeschluss
+  - Tab "Teilnehmer"
     - Seite aktiv von: eine Woche vor Veranstaltung
     - bis: öffentliche Veranstaltungen ultimo, interne Veranstaltungen: eine Woche nach Veranstaltung
     - Listen Veröffentlichen:
       - Teilnehmerliste mit Startzeit sollten alle inaktiv sein
-  - Seite "Live"
+  - Tab "Live"
     - Seite aktiv von: Veranstaltungstag
     - bis: Veranstaltungstag
-  - Seite "Ergebnisse"
+  - Tab "Ergebnisse"
     - Seite aktiv von: Veranstaltungstag
     - bis: ultimo bei öffentlichen Veranstaltungen, drei Wochen nach Wettkampf bei internen
 - **Emails/SMS**

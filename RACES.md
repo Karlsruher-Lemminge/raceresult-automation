@@ -18,24 +18,24 @@ Es handelt sich sich um eine vereinsinterne Veranstaltung.
 
 Interne Veranstaltungen haben:
 - keine Startgebühren
-- ein Limit auf 50 Teilnehmer im Anmeldeformular
+- ein Limit auf 50 Teilnehmer im Anmeldeformular → `Registration.limit`
 - das <ende-anmeldung> ist am Vortag der Veranstaltung um 18:00
 - beim Internen Swim & Run 7 Tage vor Veranstaltungsdatum
-- genau 50 Einträge im Chip File, ZJLBX51 Startnr. 1, ZJLBX52 Startnr. 2, ..., ZJLBX99 Startnr. 49, ZJLBX00 Startnr. 50
-- my.raceresult.com: Teilnehmer Liste ist aktiv von 01.01. des Veranstaltungsjahres bis 10 Tage nach Veranstaltungstag
-- my.raceresult.com: Ergebnisse ist aktiv vom Veranstaltungstag bis 10 Tage nach Veranstaltung
+- genau 50 Einträge im Chip File, ZJLBX51 Startnr. 1, ZJLBX52 Startnr. 2, ..., ZJLBX99 Startnr. 49, ZJLBX00 Startnr. 50 → `event.chipfile.get()` → `len(entries)` muss 50 sein; `ChipFileEntry.transponder` / `ChipFileEntry.identification`; speichern mit `event.chipfile.save(entries)`
+- my.raceresult.com: Teilnehmer Liste ist aktiv von 01.01. des Veranstaltungsjahres bis 10 Tage nach Veranstaltungstag → **Browser (Chrome MCP)**
+- my.raceresult.com: Ergebnisse ist aktiv vom Veranstaltungstag bis 10 Tage nach Veranstaltung → **Browser (Chrome MCP)**
 
 ## Turmbergrennen
 
 Das <ende-anmeldung> ist 7 Tage vor dem Veranstaltungsdatum um 23:59:59.
-Chip-File: mindestens 400 Einträge, wenn das heutige Datum drei Tage vor Veranstaltungsbeginn ist. Sonst leer und keine Einträge
-Listen-Veröffentlichen: nur die Liste beginnend mit "Teilnehmerliste ABC Voranmeldung" soll Aktiv sein
+Chip-File: mindestens 400 Einträge, wenn das heutige Datum drei Tage vor Veranstaltungsbeginn ist. Sonst leer und keine Einträge → `event.chipfile.get()` → `len(entries)`; löschen mit `event.chipfile.clear()`; speichern mit `event.chipfile.save(entries)`
+Listen-Veröffentlichen: nur die Liste beginnend mit "Teilnehmerliste ABC Voranmeldung" soll Aktiv sein → Listennamen ermitteln via `event.lists.names()`; Veröffentlichungsstatus nur über **Browser (Chrome MCP)**
 
 ## N. Lemming Swim & Run
 
 Das <ende-anmeldung> ist 7 Tage vor dem Veranstaltungsdatum um 23:59:59.
-Chip-File: mindestens 400 Einträge, wenn das heutige Datum drei Tage Woche vor Veranstaltungsbeginn ist. Sonst leer und keine Einträge
-Listen-Veröffentlichen: nur die Liste beginnend mit "Teilnehmerliste ABC" soll Aktiv sein
+Chip-File: mindestens 400 Einträge, wenn das heutige Datum drei Tage Woche vor Veranstaltungsbeginn ist. Sonst leer und keine Einträge → `event.chipfile.get()` → `len(entries)`; löschen mit `event.chipfile.clear()`; speichern mit `event.chipfile.save(entries)`
+Listen-Veröffentlichen: nur die Liste beginnend mit "Teilnehmerliste ABC" soll Aktiv sein → Listennamen ermitteln via `event.lists.names()`; Veröffentlichungsstatus nur über **Browser (Chrome MCP)**
 
 ## Interner Swim & Run
 

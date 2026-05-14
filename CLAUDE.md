@@ -51,7 +51,7 @@ Datum Ultimo ist 31.12.2100 23:59:59.
 
 Bei aktiv von ist immer Uhrzeit 00:00:00 gesetzt.
 
-Bei "bis" immer die Uhrzeit 23:59:59.
+Bei "bis" immer die Uhrzeit 23:59:59. Alternativ auch der Folgetag mit 00:00:00 Uhr.
 
 ## Variablen
 
@@ -69,6 +69,9 @@ Veranstaltungsdatum: [Veranstaltung.Datum]
     - ermittle unter "Veranstaltungsname" den Namen der Veranstaltung
     - setze unter Abrechnungsmodus das auf Test-Veranstaltung
   - Altersklassen: nutzer am Ende warnen wenn Altersklassen angegeben nach Geburtsdatum
+- **Finanzen**
+  - Startgeld
+    - wenn es altersabängige Startgelder gibt, dann passe diese so an, das das Geburtsjahr stimmt
 - **Anmelde-Formulare**
   - gehe unter Anmelde-Formulare jedes Formular durch und ändere folgendes:
     - Allgemeine-Einstellungen
@@ -126,6 +129,9 @@ Es finden keine Änderungen an der Veranstaltung statt.
     - ermittle unter "Veranstaltungsname" den Namen der Veranstaltung
     - ermittle ter Abrechnungsmodus den Modus, sollte echte Veranstaltung sein. Das entspricht einem leeren Wert
   - Altersklassen: ermittle ob nach Geburtsjahr oder Geburtsdatum
+- **Finanzen**
+  - Startgeld
+    - wenn es altersabängige Startgelder gibt, dann prüfe ob der Bereich für Geboren von bis auch dazu passt
 - **Anmelde-Formulare**
   - gehe unter Anmelde-Formulare jedes Formular durch
     - ermittle Aktiv von und bis

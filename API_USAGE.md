@@ -312,6 +312,71 @@ event_id = '380702'
 asyncio.run(verify_event(api_key, event_id))
 ```
 
+## Check-In Kioske
+
+### Kiosk-Namen abrufen
+
+```python
+async def list_kiosks():
+    async with RaceResultAPI() as api:
+        await api.login(api_key=api_key)
+        event = api.event(event_id)
+
+        names = await event.kiosks.names()
+        print(f'Kioske: {names}')
+
+asyncio.run(list_kiosks())
+```
+
+### Kiosk abrufen und anpassen
+
+```python
+from raceresult.models.kiosk import KioskAfterSave, KioskDisplayField, KioskStep
+
+async def configure_kiosk():
+    async with RaceResultAPI() as api:
+        await api.login(api_key=api_key)
+        event = api.event(event_id)
+
+        kiosk = await event.kiosks.get('Check-In')
+
+        # Bedingten Schritt hinzufügen (nur für Teilnehmer unter 18)
+        kiosk.steps.append(KioskStep(
+            type='edit',
+            label='Erziehungsberechtigte',
+            only_show_if='AgeOnDate(2026;06;13)<18',
+            display_fields=[
+                KioskDisplayField(type='field', value='EBZustimmung', label='Zustimmung EB'),
+                KioskDisplayField(type='field', value='EBName', label='Name EB'),
+            ],
+        ))
+
+        # Nach Check-In ein Feld automatisch setzen
+        kiosk.after_save = [
+            KioskAfterSave(type='SaveValue', destination='CheckIn', value='1')
+        ]
+
+        await event.kiosks.save(kiosk)
+
+asyncio.run(configure_kiosk())
+```
+
+### Kiosk kopieren und umbenennen
+
+```python
+async def manage_kiosks():
+    async with RaceResultAPI() as api:
+        await api.login(api_key=api_key)
+        event = api.event(event_id)
+
+        await event.kiosks.new('Neuer Kiosk')
+        await event.kiosks.copy('Check-In', 'Check-In Backup')
+        await event.kiosks.rename('Check-In Backup', 'Check-In 2')
+        await event.kiosks.delete('Check-In 2')
+
+asyncio.run(manage_kiosks())
+```
+
 ## Verfügbare Endpoints
 
 Die `EventAPI` bietet folgende Endpoints:
@@ -337,6 +402,7 @@ Die `EventAPI` bietet folgende Endpoints:
 | `event.customfields` | Zusatzfelder |
 | `event.timingpoints` | Messstellen |
 | `event.exporters` | Exporter |
+| `event.kiosks` | Check-In Kioske |
 
 ## Hinweise
 

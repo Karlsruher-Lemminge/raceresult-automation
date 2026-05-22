@@ -153,6 +153,19 @@ async def get_chip_file():
 asyncio.run(get_chip_file())
 ```
 
+## Identifier
+
+Viele Endpoints brauchen einen `Identifier` zum Adressieren von Teilnehmern:
+
+```python
+from raceresult.endpoints.participants import Identifier
+
+Identifier.by_bib(123)          # nach Startnummer
+Identifier.by_pid(456)          # nach interner Participant-ID
+Identifier.by_filter('')        # nach Filter-Ausdruck (leer = alle)
+Identifier.by_filter('Contest=1')  # nur Wettbewerb 1
+```
+
 ## Teilnehmer
 
 ### Anzahl Teilnehmer
@@ -377,32 +390,82 @@ async def manage_kiosks():
 asyncio.run(manage_kiosks())
 ```
 
+## Daten löschen (mit Identifier)
+
+Für `history`, `times` und `rawdata` ist ein `Identifier` als erstes Argument Pflicht:
+
+```python
+from raceresult.endpoints.participants import Identifier
+
+# History
+N = await event.history.count(Identifier.by_filter(''))
+await event.history.delete(Identifier.by_filter(''))
+
+# Zeiten
+N = await event.times.count(Identifier.by_filter(''))
+await event.times.delete(Identifier.by_filter(''))
+
+# Timing-Rohdaten
+N = await event.rawdata.count(Identifier.by_filter(''))
+await event.rawdata.delete(Identifier.by_filter(''))
+
+# Teilnehmer löschen (kein Identifier nötig)
+N = await event.data.count()
+await event.participants.delete(filter_expr='')
+
+# Bankinformationen löschen
+await event.participants.clear_bank_information(filter_expr='')
+```
+
 ## Verfügbare Endpoints
 
 Die `EventAPI` bietet folgende Endpoints:
 
-| Endpoint | Beschreibung |
-|----------|--------------|
-| `event.settings` | Veranstaltungseinstellungen |
-| `event.registrations` | Anmelde-Formulare |
-| `event.email_templates` | E-Mail Vorlagen |
-| `event.chipfile` | Chip-Datei |
-| `event.data` | Teilnehmerdaten |
-| `event.vouchers` | Gutscheine |
-| `event.agegroups` | Altersklassen |
-| `event.contests` | Wettbewerbe |
-| `event.participants` | Teilnehmer |
-| `event.times` | Zeiten |
-| `event.rawdata` | Timing-Rohdaten |
-| `event.history` | History-Einträge |
-| `event.lists` | Listen |
-| `event.results` | Ergebnisse |
-| `event.entryfees` | Startgebühren |
-| `event.bibranges` | Startnummernbereiche |
-| `event.customfields` | Zusatzfelder |
-| `event.timingpoints` | Messstellen |
-| `event.exporters` | Exporter |
-| `event.kiosks` | Check-In Kioske |
+| Endpoint | Beschreibung | Wichtige Methoden |
+|----------|--------------|-------------------|
+| `event.settings` | Veranstaltungseinstellungen | `get(*names)`, `get_value(name)`, `save_value(name, value)` |
+| `event.registrations` | Anmelde-Formulare | `names()`, `get(name)`, `save(reg)`, `delete(name)`, `copy(name, new_name)`, `rename(name, new_name)`, `new(name)` |
+| `event.email_templates` | E-Mail Vorlagen | `names()`, `get(name)`, `save(template)`, `delete(name)`, `send(name)` |
+| `event.chipfile` | Chip-Datei | `get()`, `save(entries)`, `clear()` |
+| `event.data` | Teilnehmerdaten (Query) | `count(filter_expr)`, `list(fields, filter_expr)` |
+| `event.vouchers` | Gutscheine | `get()`, `save(vouchers)`, `delete(ids)` |
+| `event.agegroups` | Altersklassen | `get(contest, set, name)`, `save(items)`, `delete(id)`, `generate(mode)`, `reassign(contest, identifier)` |
+| `event.contests` | Wettbewerbe | `get()`, `get_one(id)`, `save(contest)`, `delete(id)` |
+| `event.participants` | Teilnehmer (Schreiben) | `get_fields(identifier, fields)`, `save_fields(identifier, values)`, `save_value_array(values)`, `delete(filter_expr)`, `new(bib)`, `swap_bibs(bib1, bib2)`, `reset_bibs(sort)`, `clear_bank_information(filter_expr)` |
+| `event.times` | Zeiten | `get(identifier, result)`, `count(identifier)`, `delete(identifier)`, `add(passings)` |
+| `event.rawdata` | Timing-Rohdaten | `get(identifier)`, `count(identifier)`, `delete(identifier)`, `add_manual(tp, identifier, time)` |
+| `event.history` | History-Einträge | `get(identifier)`, `count(identifier)`, `delete(identifier)` |
+| `event.lists` | Listen | `names()`, `get(name)`, `save(list)`, `delete(name)`, `create_pdf(name)`, `create_html(name)`, `create_csv(name)`, `create_xlsx(name)`, `create_json(name)` |
+| `event.results` | Ergebnisse | `get()`, `get_one(id)`, `save(items)`, `delete(id)` |
+| `event.entryfees` | Startgebühren | `get(contest, id)`, `save(items)`, `delete(id)` |
+| `event.bibranges` | Startnummernbereiche | `get()`, `save(items)`, `delete(id)` |
+| `event.customfields` | Zusatzfelder | `get()`, `save(items)`, `delete(id)` |
+| `event.timingpoints` | Messstellen | `get()`, `save(items)`, `delete(name)` |
+| `event.timingpointrules` | Messstellen-Regeln | `get()`, `save(items)`, `delete(id)` |
+| `event.exporters` | Exporter | `names()`, `get(name)`, `save(exp)` |
+| `event.kiosks` | Check-In Kioske | `names()`, `get(name)`, `save(kiosk)`, `delete(name)`, `new(name)`, `copy(name, new_name)`, `rename(name, new_name)` |
+| `event.splits` | Zwischenwertungen | `get()`, `save(items)`, `delete(id)` |
+| `event.rankings` | Rankings | `get()`, `save(items)`, `delete(id)` |
+| `event.team_scores` | Teamwertungen | `get()`, `save(items)`, `delete(id)` |
+| `event.user_defined_fields` | Nutzerdefinierte Felder | `get()`, `save(items)`, `delete(name)` |
+| `event.group_times` | Gruppenzeiten / Wellen | `get(contest)`, `save(contest, group_times)` |
+| `event.rawdata_rules` | Rohdaten-Regeln | `get()`, `save(items)`, `delete(id)` |
+| `event.webhooks` | Webhooks | `get()`, `save(items)`, `delete(id)` |
+| `event.simple_api` | Simple-API Einträge | `get()`, `save(items)`, `delete(key)` |
+| `event.statistics` | Statistiken | `get(fields, filter_expr)` |
+| `event.overwrite_values` | Überschreibwerte | `get(filter_expr)`, `save(items)`, `delete(...)` |
+| `event.information` | Veranstaltungs-Info | `get()`, `save(info)` |
+| `event.labels` | Etiketten | `names()`, `get(name)`, `save(label)` |
+| `event.pictures` | Fotos | `get(identifier)`, `upload(identifier, data)`, `delete(id)` |
+| `event.archives` | Archiv | `get()`, `download(id)` |
+| `event.backup` | Backup | `create()`, `get()` |
+| `event.certificate_sets` | Urkunden-Sets | `names()`, `get(name)`, `save(cs)` |
+| `event.certificates` | Urkunden | `names()`, `get(name)`, `save(cert)` |
+| `event.chat` | Chat | `get(since_id)`, `send(message)` |
+| `event.dependencies` | Abhängigkeiten | `get()` |
+| `event.file` | Dateien | `get(path)`, `save(path, data)`, `delete(path)` |
+| `event.forwarding` | Weiterleitung | `get_info()` |
+| `event.synchronization` | Synchronisation | `get()` |
 
 ## Hinweise
 

@@ -16,7 +16,7 @@ Für alle Prüfungen nutze die py-raceresult API. Der API Key liegt in .env mit 
 
 Ausgenommen die Werte im my.raceresult.com Menü. Diese müssen mittels Chrome Browser MCP geprüft werden.
 Dazu muss sich der Nutzer auf https://events.raceresult.com/ anmelden.
-Stelle im Chrome Browser immer sicher, das die URL mit https://events.raceresult.com/_<eventid> anfängt.
+Stelle im Chrome Browser immer sicher, das die URL mit https://events.raceresult.com/_<eventid> anfängt. Beachte dabei den Underscore in der URL vor der eventid
 Breche die Verarbeitung ab, falls das nicht mehr der Fall ist
 
 Für Startnummern Neuvergabe nutze den Skill py-raceresult-bib-assignment

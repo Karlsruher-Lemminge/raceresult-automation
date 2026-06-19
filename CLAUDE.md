@@ -14,11 +14,6 @@
 
 Für alle Prüfungen nutze die py-raceresult API. Der API Key liegt in .env mit namen API\_KEY.
 
-Ausgenommen die Werte im my.raceresult.com Menü. Diese müssen mittels Chrome Browser MCP geprüft werden.
-Dazu muss sich der Nutzer auf https://events.raceresult.com/ anmelden.
-Stelle im Chrome Browser immer sicher, das die URL mit https://events.raceresult.com/_<eventid> anfängt. Beachte dabei den Underscore in der URL vor der eventid
-Breche die Verarbeitung ab, falls das nicht mehr der Fall ist
-
 Für Startnummern Neuvergabe nutze den Skill py-raceresult-bib-assignment
 
 ## py-raceresult API Beispiel Code
@@ -84,23 +79,24 @@ Veranstaltungsdatum: [Veranstaltung.Datum]
   - Allgemeine Payment-Einstellungen
     - Zahlungsmittel-Einstellungen
       - SEPA-Basislastschrift (EUR)
-        Lastschriften nicht vor diesem Datum einziehen prüfen, ob gesetzt und dem Nutzer gegen Ende mitteilen → **Browser (Chrome MCP)**
+        Lastschriften nicht vor diesem Datum einziehen: prüfen ob gesetzt und dem Nutzer gegen Ende mitteilen → Portal-Setting-Key ermitteln via `event.settings.names_by_prefix("Portal")`, Wert lesen via `event.settings.get_value(...)`
 - **my.raceresult.com**
-  - my.raceresult.com aktivieren → **Browser (Chrome MCP)**
-    - "Veranstaltung im my.raceresult.com Portal anzeigen" aktiv
+  - Portal-Einstellungen lesen: `names = await event.settings.names_by_prefix("Portal")`, dann `vals = await event.settings.get(*names)`; speichern mit `event.settings.save_value(key, value)`
+  - my.raceresult.com aktivieren
+    - "Veranstaltung im my.raceresult.com Portal anzeigen" aktiv → Setting-Key aus Portal-Prefix ermitteln
     - "Veranstaltung im Veranstaltungskalender anzeigen" aktiv bei öffentlichen Veranstaltungen, inaktiv bei internen
-  - Tab "Anmeldung" aktivieren von Jahresanfang bis Tag Anmeldeschluss → **Browser (Chrome MCP)**
-  - Tab "Teilnehmer" → **Browser (Chrome MCP)**
-    - Seite aktiv von: eine Woche vor Veranstaltung
-    - bis: öffentliche Veranstaltungen ultimo, interne Veranstaltungen: eine Woche nach Veranstaltung
+  - Tab "Anmeldung" aktivieren von Jahresanfang bis Tag Anmeldeschluss → `PortalRegEnabled`, `PortalRegFrom`, `PortalRegUntil`
+  - Tab "Teilnehmer"
+    - Seite aktiv von: eine Woche vor Veranstaltung → `PortalShowFrom2`
+    - bis: öffentliche Veranstaltungen ultimo, interne Veranstaltungen: eine Woche nach Veranstaltung → `PortalShowUntil2`
     - Listen Veröffentlichen:
-      - Teilnehmerliste mit Startzeit sollten alle inaktiv sein → **Browser (Chrome MCP)** (Listennamen vorher ermitteln via `event.lists.names()`)
-  - Tab "Live" → **Browser (Chrome MCP)**
-    - Seite aktiv von: Veranstaltungstag
-    - bis: Veranstaltungstag
-  - Tab "Ergebnisse" → **Browser (Chrome MCP)**
-    - Seite aktiv von: Veranstaltungstag
-    - bis: ultimo bei öffentlichen Veranstaltungen, drei Wochen nach Wettkampf bei internen
+      - Teilnehmerliste mit Startzeit sollten alle inaktiv sein (Listennamen vorher ermitteln via `event.lists.names()`) → `PortalListsJSON`, `PortalLists2JSON`
+  - Tab "Live"
+    - Seite aktiv von: Veranstaltungstag → `PortalShowFrom4`
+    - bis: Veranstaltungstag → `PortalShowUntil4`
+  - Tab "Ergebnisse"
+    - Seite aktiv von: Veranstaltungstag → `PortalShowFrom1`
+    - bis: ultimo bei öffentlichen Veranstaltungen, drei Wochen nach Wettkampf bei internen → `PortalShowUntil1`
 - **Emails/SMS**
   - gehe alle E-Mail und SMS Templates durch. Prüfe ob der Veranstaltungsname, das Jahr oder das Datum hier gesetzt sind. Ersetze gegen Variable. → `event.email_templates.names()`, dann `event.email_templates.get(name)` → prüfe `EmailTemplate.subject` und `EmailTemplate.text`; speichern mit `event.email_templates.save(template)`
 
@@ -140,27 +136,28 @@ Es finden keine Änderungen an der Veranstaltung statt.
   - Allgemeine Payment-Einstellungen
     - Zahlungsmittel-Einstellungen
       - SEPA-Basislastschrift (EUR)
-        Lastschriften nicht vor diesem Datum einziehen: Datum ermitteln falls gesetzt → **Browser (Chrome MCP)**
+        Lastschriften nicht vor diesem Datum einziehen: Datum ermitteln falls gesetzt → Portal-Setting-Key ermitteln via `event.settings.names_by_prefix("Portal")`
 - **my.raceresult.com**
-  - my.raceresult.com Status → **Browser (Chrome MCP)**
-    - "Veranstaltung im my.raceresult.com Portal anzeigen" ermitteln, sollte aktiv sein
+  - Portal-Einstellungen lesen: `names = await event.settings.names_by_prefix("Portal")`, dann `vals = await event.settings.get(*names)`
+  - my.raceresult.com Status
+    - "Veranstaltung im my.raceresult.com Portal anzeigen" ermitteln, sollte aktiv sein → Setting-Key aus Portal-Prefix ermitteln
     - "Veranstaltung im Veranstaltungskalender anzeigen" aktiv/inaktiv prüfen
       - bei öffentlichen Veranstaltungen aktiv
       - bei internen Veranstaltungen inaktiv
-  - Seite "Anmeldung" → **Browser (Chrome MCP)**
-    - Seite Aktiv von: ermitteln
-    - bis: ermitteln
-  - Seite "Teilnehmer" → **Browser (Chrome MCP)**
-    - Seite aktiv von: ermitteln
-    - bis: ermitteln
+  - Seite "Anmeldung"
+    - Seite Aktiv von: ermitteln → `PortalRegFrom`
+    - bis: ermitteln → `PortalRegUntil`
+  - Seite "Teilnehmer"
+    - Seite aktiv von: ermitteln → `PortalShowFrom2`
+    - bis: ermitteln → `PortalShowUntil2`
     - Listen Veröffentlichen:
-      - ermitteln welche Listen aktiv sind. falls definitionen im RACES.md vorhanden sind, prüfe die dort erwähnten zu veröffentlichenden Listen → Listennamen ermitteln via `event.lists.names()`; Veröffentlichungsstatus nur über **Browser (Chrome MCP)**
-  - Seite "Live" → **Browser (Chrome MCP)**
-    - Seite aktiv von: ermitteln
-    - bis: ermitteln
-  - Seite "Ergebnisse" → **Browser (Chrome MCP)**
-    - Seite aktiv von: ermitteln
-    - bis: ermitteln
+      - ermitteln welche Listen aktiv sind. falls definitionen im RACES.md vorhanden sind, prüfe die dort erwähnten zu veröffentlichenden Listen → Listennamen ermitteln via `event.lists.names()`, Konfiguration in `PortalListsJSON`, `PortalLists2JSON`
+  - Seite "Live"
+    - Seite aktiv von: ermitteln → `PortalShowFrom4`
+    - bis: ermitteln → `PortalShowUntil4`
+  - Seite "Ergebnisse"
+    - Seite aktiv von: ermitteln → `PortalShowFrom1`
+    - bis: ermitteln → `PortalShowUntil1`
 - **Emails/SMS**
   - gehe alle E-Mail und SMS Templates durch, prüfe: → `event.email_templates.names()`, dann `event.email_templates.get(name)`
     - Veranstaltungsjahr → in `EmailTemplate.subject` und `EmailTemplate.text`
@@ -175,3 +172,31 @@ Es finden keine Änderungen an der Veranstaltung statt.
   - Gutscheine: keine Einträge vorhanden → `vouchers = await event.vouchers.get()` → `len(vouchers)` muss 0 sein
 
 Gebe alle geprüften Werte aus. Markiere die wo es inkonsitente Werte gibt.
+
+## Aufgabe: Urkunden (Certificates) generieren
+
+Urkunden können automatisiert als PDF oder JPG erzeugt werden.
+
+```python
+# Verfügbare Urkunden-Templates ermitteln
+names = await event.certificates.names()
+
+# Template-Details lesen (Seitenformat, Elemente)
+cert = await event.certificates.get("Urkunde")
+
+# Einzelne Urkunde als PDF (nach Startnummer)
+pdf = await event.certificates.create_pdf("Urkunde", page=1, bib=42, lang="de")
+
+# Einzelne Urkunde als JPG-Vorschau
+jpg = await event.certificates.create_jpg("Urkunde", page=1, bib=42, dpi=150, lang="de")
+
+# Certificate Sets (definieren wer welche Urkunde bekommt)
+set_names = await event.certificate_sets.names()
+cs = await event.certificate_sets.get(set_names[0])
+
+# Anzahl Teilnehmer im Set
+n = await event.certificate_sets.count("Urkunde", contests=[1, 2])
+
+# Sammel-PDF aller Teilnehmer im Set
+bulk_pdf = await event.certificate_sets.create("Urkunde", contests=[1], lang="de")
+```

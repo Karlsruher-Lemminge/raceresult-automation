@@ -440,32 +440,32 @@ Die `EventAPI` bietet folgende Endpoints:
 | `event.entryfees` | Startgebühren | `get(contest, id)`, `save(items)`, `delete(id)` |
 | `event.bibranges` | Startnummernbereiche | `get()`, `save(items)`, `delete(id)` |
 | `event.customfields` | Zusatzfelder | `get()`, `save(items)`, `delete(id)` |
-| `event.timingpoints` | Messstellen | `get()`, `save(items)`, `delete(name)` |
+| `event.timingpoints` | Messstellen | `get()`, `save(item, old_name='')`, `delete(name)` |
 | `event.timingpointrules` | Messstellen-Regeln | `get()`, `save(items)`, `delete(id)` |
-| `event.exporters` | Exporter | `names()`, `get(name)`, `save(exp)` |
+| `event.exporters` | Exporter | `get()`, `get_one(id)`, `save(item)`, `delete(id)` |
 | `event.kiosks` | Check-In Kioske | `names()`, `get(name)`, `save(kiosk)`, `delete(name)`, `new(name)`, `copy(name, new_name)`, `rename(name, new_name)` |
 | `event.splits` | Zwischenwertungen | `get()`, `save(items)`, `delete(id)` |
 | `event.rankings` | Rankings | `get()`, `save(items)`, `delete(id)` |
 | `event.team_scores` | Teamwertungen | `get()`, `save(items)`, `delete(id)` |
-| `event.user_defined_fields` | Nutzerdefinierte Felder | `get()`, `save(items)`, `delete(name)` |
-| `event.group_times` | Gruppenzeiten / Wellen | `get(contest)`, `save(contest, group_times)` |
+| `event.user_defined_fields` | Nutzerdefinierte Felder | `get()`, `set(items)` |
+| `event.group_times` | Gruppenzeiten / Wellen | `get(ttype)`, `save(ttype, item)` |
 | `event.rawdata_rules` | Rohdaten-Regeln | `get()`, `save(items)`, `delete(id)` |
 | `event.webhooks` | Webhooks | `get()`, `save(items)`, `delete(id)` |
 | `event.simple_api` | Simple-API Einträge | `get()`, `save(items)`, `delete(key)` |
-| `event.statistics` | Statistiken | `get(fields, filter_expr)` |
-| `event.overwrite_values` | Überschreibwerte | `get(filter_expr)`, `save(items)`, `delete(...)` |
-| `event.information` | Veranstaltungs-Info | `get()`, `save(info)` |
+| `event.statistics` | Statistiken | `names()`, `get(name)`, `save(item)`, `create(name, format, contests)`, `query(row, col, filter_expr, field, aggregation)` |
+| `event.overwrite_values` | Überschreibwerte | `count(identifier, result, contest, filter_expr)`, `save(identifier, result, value)`, `delete(identifier, result, contest, filter_expr)` |
+| `event.information` | Vorname/Namens-Infos | `frequent_names(prefix, max_no)`, `get_sex(name)`, `add_first_name(name, sex)` |
 | `event.labels` | Etiketten | `names()`, `get(name)`, `save(label)` |
-| `event.pictures` | Fotos | `get(identifier)`, `upload(identifier, data)`, `delete(id)` |
-| `event.archives` | Archiv | `get()`, `download(id)` |
-| `event.backup` | Backup | `create()`, `get()` |
-| `event.certificate_sets` | Urkunden-Sets | `names()`, `get(name)`, `save(cs)` |
-| `event.certificates` | Urkunden | `names()`, `get(name)`, `save(cert)` |
-| `event.chat` | Chat | `get(since_id)`, `send(message)` |
-| `event.dependencies` | Abhängigkeiten | `get()` |
-| `event.file` | Dateien | `get(path)`, `save(path, data)`, `delete(path)` |
-| `event.forwarding` | Weiterleitung | `get_info()` |
-| `event.synchronization` | Synchronisation | `get()` |
+| `event.pictures` | Fotos | `names(folder)`, `get(name)`, `import_picture(folder, name, content)`, `delete(name)` |
+| `event.archives` | Archiv | `get_matches(prefix, max_number)`, `get_entry(id, reg_no)`, `get_participations(identifier)`, `download()`, `import_file(data)` |
+| `event.backup` | Backup | `active()`, `start(hostname, filename)`, `restart()`, `stop()`, `info()` |
+| `event.certificate_sets` | Urkunden-Sets | `names()`, `get(name)`, `save(cs)`, `count(name, contests)`, `create(name, contests, filter, lang)` |
+| `event.certificates` | Urkunden | `names()`, `get(name)`, `save(cert)`, `create_pdf(name, page, bib, lang)`, `create_jpg(name, page, bib, dpi, lang)` |
+| `event.chat` | Chat | `get_messages(min_id)`, `get_users(username)`, `post_message(username, msg)` |
+| `event.dependencies` | Abhängigkeiten | `show()`, `circular_references()` |
+| `event.file` | SES-Freigabestatus | `get_file()`, `not_activated(filter_expr)`, `mod_job_id()`, `ses_version()` |
+| `event.forwarding` | Weiterleitung | `active()`, `start(hostname, eventid, auth_token)`, `restart()`, `stop()`, `info()` |
+| `event.synchronization` | Synchronisation | `is_checked_out()`, `set_checked_in()` |
 
 ## Hinweise
 

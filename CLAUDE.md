@@ -163,6 +163,13 @@ Es finden keine Änderungen an der Veranstaltung statt.
     - Veranstaltungsjahr → in `EmailTemplate.subject` und `EmailTemplate.text`
     - Veranstaltungsname → in `EmailTemplate.subject` und `EmailTemplate.text`
     - Veranstaltungsdatum → in `EmailTemplate.subject` und `EmailTemplate.text`
+- **Check-In Kioske**
+  - Kiosk-Namen ermitteln → `event.kiosks.names()`
+  - Kiosk abrufen → `event.kiosks.get(name)` → Modell: `Kiosk`, Steps: `Kiosk.steps` (Liste von `KioskStep`)
+  - Kiosk speichern → `event.kiosks.save(kiosk)`
+  - Kiosk anlegen/kopieren/umbenennen/löschen → `event.kiosks.new(name)` / `.copy(name, new_name)` / `.rename(name, new_name)` / `.delete(name)`
+  - Automatische Feldwerte nach Check-In → `Kiosk.after_save = [KioskAfterSave(type='SaveValue', destination='<Feldname>', value='<Wert>')]`
+  - Bedingte Schritte (z.B. nur für Jugendliche) → `KioskStep.only_show_if` mit RaceResult-Filterausdruck, z.B. `AgeOnDate(Jahr;Monat;Tag)<18`
 - **Timing**
   - Einstellungen
     - Chip File: sollte den Informationen in RACES.md entsprechen → `event.chipfile.get()` → Anzahl: `len(entries)`, Inhalt: `ChipFileEntry.transponder` / `ChipFileEntry.identification`

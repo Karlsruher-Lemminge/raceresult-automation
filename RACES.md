@@ -59,3 +59,11 @@ Die Startnummern Neuvergabe erfolgt nach folgender Logik:
 - auf einer Bahn sollen möglichst gleichschnelle Schwimmer starten
 - die Schwimmer sollen möglichst gleichmaessig auf die Bahnen verteilt werden
 - die Finishzeit des letzten Teilnehmers soll möglichst früh sein, schnelle Schwimmer mit deutlich langsamer Laufzeit starten falls notwendig dazu in einer früheren Welle
+
+## Interne Biermeile
+
+Zusätzlich gelten die Regeln für interne Veranstaltungen (Name beginnt mit „Intern“).
+
+- 4× 400 m Laufen, dazwischen 3× Trinken; Messstellen START_ZIEL (5 Lesungen) und END_RUN_START_DRINK (3 Lesungen)
+- Wettbewerb „Biermeile“ (mit Alkohol): Mindestalter 18 am Veranstaltungstag → `age_end` = Veranstaltungsdatum minus 18 Jahre
+- Sonderwertungen „Schnellste Trink-/Laufsplits“ nur mit vollständigen Sektoren (`.Exists`-Filter), siehe TIMING.md

@@ -1,1 +1,223 @@
-CLAUDE.md
+# Raceresult Veranstaltung editieren
+
+## Vorbereitung
+
+ * erstelle eine Python Virtualenv in .venv mit Python 3.14
+ * installiere das Modul https://github.com/Karlsruher-Lemminge/py-raceresult
+ * der API Key ist in .env, falls nicht frage den Nutzer
+ * Frage den Nutzer nach der zu bearbeitenden eventid
+ * rufe die Basisdaten zur eventid ab → `event.settings.get('EventName', 'EventDate', 'EventLocation')`
+ * Frage den Nutzer, ob das das richtig Event ist
+ * dann führe die vom Nutzer angefragten Prüfungen oder Änderungen durch
+
+## Tools
+
+Für alle Prüfungen nutze die py-raceresult API. Der API Key liegt in .env mit namen API\_KEY.
+
+Für Startnummern Neuvergabe nutze den Skill py-raceresult-bib-assignment
+
+## py-raceresult API Beispiel Code
+
+Siehe API_USAGE.md
+
+## Raceresult Felder, Ausdrücke und Funktionen
+
+Wenn du Feldnamen, Funktionen, Filterausdrücke, Operatoren oder Formatierungsangaben für Raceresult benötigst oder prüfen möchtest, nutze die Dokumentation in `raceresult-kb/`.
+
+Die Übersicht aller verfügbaren Dateien und deren Inhalte findest du in:
+
+**`raceresult-kb/INDEX.md`**
+
+Dort ist beschrieben welche Datei welche Felder, Funktionen und Konzepte dokumentiert (z.B. Feldnamen für Zeitfelder → `7174-Felder.md`, String-Funktionen → `2057-Funktionen.md`, Filter-Syntax → `2109-Filter.md`).
+
+## Zeitnahme
+
+Für Prüfung/Aufbau von Messstellen, Splits, Rankings und Prüflisten siehe **`TIMING.md`**.
+
+## Hinweise / Stolperfallen
+
+- `check_event.py` = fertiges Prüfskript für „Veranstaltung prüfen“, hat aber API_KEY/EVENT_ID hartkodiert → Kopie in Scratchpad mit `os.environ['API_KEY']` + neuer ID ausführen (`set -a && source .env && set +a`)
+- Zeitnahme-Konfig lesen: `event.contests/timingpoints/splits/rankings/rawdata_rules/user_defined_fields.get()`; Results-Formeln nur roh via `event.results._client.get_json(eid, 'results/get', {})`
+- Split-Konstanten (`raceresult/models/event.py`): `split_type` 0=Split, 2=intern, 9=Sektor; `time_mode` -2 = time_min/max relativ zum Vorgänger-Split, 0 = relativ zum Wettkampfstart
+- Unterstriche in Zeit-Texten (z.B. `'6_56,10'`) kommen vom RR-Server: nicht aktivierte Teilnehmer werden maskiert → `await event.file.not_activated('')` prüfen
+- `event.file.get_file()` lädt die komplette SQLite-Eventdatei (MB-groß) – nicht printen
+- `Registration.enabled` (API `Enabled`) ist ein eigenes Flag neben Aktiv von/bis – bei der Prüfung mit ausgeben
+
+## Allgemein
+
+Für jede Veranstaltung muss vorher festgelegt werden, wann die Anmeldung öffnet <start-anmeldung>.
+
+Für Details zu verschiedenen Wettkämpfen schaue in die Datei RACES.md. Dort sind Definitionen zu verschiedenen Veranstaltungen definiert.
+
+Frage aber auf jeden Fall den Nutzer, ob das Datum der Veranstaltung so korrekt ist.
+
+Prüfe das <start-anmeldung> vor <ende-anmeldung> liegt und das beide Daten vor dem Veranstaltungsdatum liegen.
+
+Ausserdem muss das Veranstaltungsdatum im aktuellen oder kommenden Jahr liegen.
+
+Datum Ultimo ist 31.12.2100 23:59:59.
+
+Bei aktiv von ist immer Uhrzeit 00:00:00 gesetzt.
+
+Bei "bis" immer die Uhrzeit 23:59:59. Alternativ auch der Folgetag mit 00:00:00 Uhr.
+
+## Variablen
+
+Raceresult Variablen sind in [] eingeschlossen. 
+
+Veranstaltungsname: [Veranstaltung]
+Veranstaltungs Jahr: [Veranstaltung.Jahr]
+Veranstaltungsdatum: [Veranstaltung.Datum]
+
+## Aufgabe: kopierte Veranstaltung aus dem Vorjahr editieren und anpassen
+
+- **Grundeinstellungen**
+  - Veranstaltung
+    - ermittle unter "Veranstaltungsdatum von" das Datum der Veranstaltung → `event.settings.get_value('EventDate')` (Format: YYYY-MM-DD)
+    - ermittle unter "Veranstaltungsname" den Namen der Veranstaltung → `event.settings.get_value('EventName')`
+    - setze unter Abrechnungsmodus das auf Test-Veranstaltung → `event.settings.save_value('PaymentMode', 'Test')`
+  - Altersklassen: nutzer am Ende warnen wenn Altersklassen angegeben nach Geburtsdatum → `event.agegroups.get()` → prüfe ob `AgeGroup.date_start` / `AgeGroup.date_end` tagsgenaue Grenzen enthält (dann = Geburtsdatum) statt jahrsgenaue 01.01.–31.12. (dann = Geburtsjahr)
+- **Finanzen**
+  - Startgeld
+    - wenn es altersabängige Startgelder gibt, dann passe diese so an, das das Geburtsjahr stimmt → `event.entryfees.get()` → prüfe `EntryFee.date_start` / `EntryFee.date_end`, speichern mit `event.entryfees.save([...])`
+- **Anmelde-Formulare**
+  - gehe unter Anmelde-Formulare jedes Formular durch und ändere folgendes: → `event.registrations.names()`, dann pro Formular `event.registrations.get(name)`
+    - Allgemeine-Einstellungen
+      - Aktiv von: <start-anmeldung> → `Registration.enabled_from`; speichern mit `event.registrations.save(registration)`
+      - bis: <ende-anmeldung> → `Registration.enabled_to`
+    - Bestätigungsseite
+      - Prüfe den Text, ob dort der Veranstaltungsname, das Datum oder das Veranstaltungsjahr vorhanden sind und aktualisiere diese. → `Registration.confirmation.expression`
+        Idealerweise sollte ein Vorkommen durch Variablen ersetzt werden.
+    - Änderungsformulare benötigen kein gesetztes "Aktiv von". Dies kann entfernt werden. → erkennbar an `Registration.change_identity_field != ''`; `Registration.enabled_from = None` setzen und speichern
+  - Allgemeine Payment-Einstellungen
+    - Zahlungsmittel-Einstellungen
+      - SEPA-Basislastschrift (EUR)
+        Lastschriften nicht vor diesem Datum einziehen: prüfen ob gesetzt und dem Nutzer gegen Ende mitteilen → Portal-Setting-Key ermitteln via `event.settings.names_by_prefix("Portal")`, Wert lesen via `event.settings.get_value(...)`
+- **my.raceresult.com**
+  - Portal-Einstellungen lesen: `names = await event.settings.names_by_prefix("Portal")`, dann `vals = await event.settings.get(*names)`; speichern mit `event.settings.save_value(key, value)`
+  - my.raceresult.com aktivieren
+    - "Veranstaltung im my.raceresult.com Portal anzeigen" aktiv → Setting-Key aus Portal-Prefix ermitteln
+    - "Veranstaltung im Veranstaltungskalender anzeigen" aktiv bei öffentlichen Veranstaltungen, inaktiv bei internen
+  - Tab "Anmeldung" aktivieren von Jahresanfang bis Tag Anmeldeschluss → `PortalRegEnabled`, `PortalRegFrom`, `PortalRegUntil`
+  - Tab "Teilnehmer"
+    - Seite aktiv von: eine Woche vor Veranstaltung → `PortalShowFrom2`
+    - bis: öffentliche Veranstaltungen ultimo, interne Veranstaltungen: eine Woche nach Veranstaltung → `PortalShowUntil2`
+    - Listen Veröffentlichen:
+      - Teilnehmerliste mit Startzeit sollten alle inaktiv sein (Listennamen vorher ermitteln via `event.lists.names()`) → `PortalListsJSON`, `PortalLists2JSON`
+  - Tab "Live"
+    - Seite aktiv von: Veranstaltungstag → `PortalShowFrom4`
+    - bis: Veranstaltungstag → `PortalShowUntil4`
+  - Tab "Ergebnisse"
+    - Seite aktiv von: Veranstaltungstag → `PortalShowFrom1`
+    - bis: ultimo bei öffentlichen Veranstaltungen, drei Wochen nach Wettkampf bei internen → `PortalShowUntil1`
+- **Emails/SMS**
+  - gehe alle E-Mail und SMS Templates durch. Prüfe ob der Veranstaltungsname, das Jahr oder das Datum hier gesetzt sind. Ersetze gegen Variable. → `event.email_templates.names()`, dann `event.email_templates.get(name)` → prüfe `EmailTemplate.subject` und `EmailTemplate.text`; speichern mit `event.email_templates.save(template)`
+
+Warte mit folgenden Punkte, bis der Nutzer bestätigt hat, das diese durchgeführt werden sollen und fragen in jedem Fall nach:
+
+- **Teilnehmer**
+  - Löschen
+    - Teilnehmer löschen: Klicke auf den Button "N Teilnehmer löschen" und merke Dir den Wert von N → `N = await event.data.count()`, dann `event.participants.delete(filter_expr='')`
+    - History-Daten löschen: klicke auf "N History-Einträge" löschen und merke Dir den Wert von N → `N = await event.history.count(Identifier.by_filter(''))`, dann `event.history.delete(Identifier.by_filter(''))`
+    - Zeiten löschen: klicke auf "N Zeiten löschen" und merke Dir den Wert von N → `N = await event.times.count(Identifier.by_filter(''))`, dann `event.times.delete(Identifier.by_filter(''))`
+    - Timing-Rohdaten löschen: klicke auf "N Rohdaten löschen" und merke Dir den Wert von N → `N = await event.rawdata.count(Identifier.by_filter(''))`, dann `event.rawdata.delete(Identifier.by_filter(''))`
+    - Bankinformationen löschen: klicke auf "Für N Teilnehmer Bankinformationen löschen" und merke Dir den Wert von N → `N = await event.data.count()`, dann `event.participants.clear_bank_information(filter_expr='')`
+- **Finanzen**
+  - Gutschein: klicke auf Alle Einträge löschen → `vouchers = await event.vouchers.get(); N = len(vouchers)`, dann `event.vouchers.delete([v.id for v in vouchers])`
+
+Reporte danach die einzelnen gelöschten Daten und die jeweilige Zahl N der gelöschten Daten.
+
+## Aufgabe: Veranstaltung prüfen
+
+Zur Prüfung der Versanstaltung vor der Verwendung zur Anmeldung werden diverse Einstellungen geprüft und dem Nutzer ausgegeben. 
+Es finden keine Änderungen an der Veranstaltung statt.
+
+- **Grundeinstellungen**
+  - Veranstaltung
+    - ermittle unter "Veranstaltungsdatum von" das Datum der Veranstaltung → `event.settings.get_value('EventDate')`
+    - ermittle unter "Veranstaltungsname" den Namen der Veranstaltung → `event.settings.get_value('EventName')`
+    - ermittle ter Abrechnungsmodus den Modus, sollte echte Veranstaltung sein. Das entspricht einem leeren Wert → `event.settings.get_value('PaymentMode')` (leer = echte Veranstaltung)
+  - Altersklassen: ermittle ob nach Geburtsjahr oder Geburtsdatum → `event.agegroups.get()` → jahrsgenaue Grenzen (01.01.–31.12.) = Geburtsjahr, tagsgenaue Grenzen = Geburtsdatum; Modell: `AgeGroup.date_start` / `AgeGroup.date_end`
+- **Finanzen**
+  - Startgeld
+    - wenn es altersabängige Startgelder gibt, dann prüfe ob der Bereich für Geboren von bis auch dazu passt → `event.entryfees.get()` → prüfe `EntryFee.date_start` / `EntryFee.date_end`
+- **Anmelde-Formulare**
+  - gehe unter Anmelde-Formulare jedes Formular durch → `event.registrations.names()`, dann `event.registrations.get(name)`
+    - ermittle Aktiv von und bis → `Registration.enabled_from`, `Registration.enabled_to`
+  - Bestätigungsseite
+    - prüfe den Text, ob alle Referenzen auf das Datum der Versanstaltung korrekt sind bzw. das aktuelle Jahr genannt wird → `Registration.confirmation.expression`
+  - Allgemeine Payment-Einstellungen
+    - Zahlungsmittel-Einstellungen
+      - SEPA-Basislastschrift (EUR)
+        Lastschriften nicht vor diesem Datum einziehen: Datum ermitteln falls gesetzt → Portal-Setting-Key ermitteln via `event.settings.names_by_prefix("Portal")`
+- **my.raceresult.com**
+  - Portal-Einstellungen lesen: `names = await event.settings.names_by_prefix("Portal")`, dann `vals = await event.settings.get(*names)`
+  - my.raceresult.com Status
+    - "Veranstaltung im my.raceresult.com Portal anzeigen" ermitteln, sollte aktiv sein → Setting-Key aus Portal-Prefix ermitteln
+    - "Veranstaltung im Veranstaltungskalender anzeigen" aktiv/inaktiv prüfen
+      - bei öffentlichen Veranstaltungen aktiv
+      - bei internen Veranstaltungen inaktiv
+  - Seite "Anmeldung"
+    - Seite Aktiv von: ermitteln → `PortalRegFrom`
+    - bis: ermitteln → `PortalRegUntil`
+  - Seite "Teilnehmer"
+    - Seite aktiv von: ermitteln → `PortalShowFrom2`
+    - bis: ermitteln → `PortalShowUntil2`
+    - Listen Veröffentlichen:
+      - ermitteln welche Listen aktiv sind. falls definitionen im RACES.md vorhanden sind, prüfe die dort erwähnten zu veröffentlichenden Listen → Listennamen ermitteln via `event.lists.names()`, Konfiguration in `PortalListsJSON`, `PortalLists2JSON`
+  - Seite "Live"
+    - Seite aktiv von: ermitteln → `PortalShowFrom4`
+    - bis: ermitteln → `PortalShowUntil4`
+  - Seite "Ergebnisse"
+    - Seite aktiv von: ermitteln → `PortalShowFrom1`
+    - bis: ermitteln → `PortalShowUntil1`
+- **Emails/SMS**
+  - gehe alle E-Mail und SMS Templates durch, prüfe: → `event.email_templates.names()`, dann `event.email_templates.get(name)`
+    - Veranstaltungsjahr → in `EmailTemplate.subject` und `EmailTemplate.text`
+    - Veranstaltungsname → in `EmailTemplate.subject` und `EmailTemplate.text`
+    - Veranstaltungsdatum → in `EmailTemplate.subject` und `EmailTemplate.text`
+- **Check-In Kioske**
+  - Kiosk-Namen ermitteln → `event.kiosks.names()`
+  - Kiosk abrufen → `event.kiosks.get(name)` → Modell: `Kiosk`, Steps: `Kiosk.steps` (Liste von `KioskStep`)
+  - Kiosk speichern → `event.kiosks.save(kiosk)`
+  - Kiosk anlegen/kopieren/umbenennen/löschen → `event.kiosks.new(name)` / `.copy(name, new_name)` / `.rename(name, new_name)` / `.delete(name)`
+  - Automatische Feldwerte nach Check-In → `Kiosk.after_save = [KioskAfterSave(type='SaveValue', destination='<Feldname>', value='<Wert>')]`
+  - Bedingte Schritte (z.B. nur für Jugendliche) → `KioskStep.only_show_if` mit RaceResult-Filterausdruck, z.B. `AgeOnDate(Jahr;Monat;Tag)<18`
+- **Timing**
+  - Einstellungen
+    - Chip File: sollte den Informationen in RACES.md entsprechen → `event.chipfile.get()` → Anzahl: `len(entries)`, Inhalt: `ChipFileEntry.transponder` / `ChipFileEntry.identification`
+  - Zeitnahme-Konfiguration (Messstellen, Splits, Rankings, Prüflisten) gegen die Regeln in TIMING.md prüfen und mit Testdaten nachrechnen
+- **Teilnehmer**
+  - Teilnehmer: keine Einträge vorhanden → `await event.data.count()` muss 0 sein
+- **Finanzen**
+  - Gutscheine: keine Einträge vorhanden → `vouchers = await event.vouchers.get()` → `len(vouchers)` muss 0 sein
+
+Gebe alle geprüften Werte aus. Markiere die wo es inkonsitente Werte gibt.
+
+## Aufgabe: Urkunden (Certificates) generieren
+
+Urkunden können automatisiert als PDF oder JPG erzeugt werden.
+
+```python
+# Verfügbare Urkunden-Templates ermitteln
+names = await event.certificates.names()
+
+# Template-Details lesen (Seitenformat, Elemente)
+cert = await event.certificates.get("Urkunde")
+
+# Einzelne Urkunde als PDF (nach Startnummer)
+pdf = await event.certificates.create_pdf("Urkunde", page=1, bib=42, lang="de")
+
+# Einzelne Urkunde als JPG-Vorschau
+jpg = await event.certificates.create_jpg("Urkunde", page=1, bib=42, dpi=150, lang="de")
+
+# Certificate Sets (definieren wer welche Urkunde bekommt)
+set_names = await event.certificate_sets.names()
+cs = await event.certificate_sets.get(set_names[0])
+
+# Anzahl Teilnehmer im Set
+n = await event.certificate_sets.count("Urkunde", contests=[1, 2])
+
+# Sammel-PDF aller Teilnehmer im Set
+bulk_pdf = await event.certificate_sets.create("Urkunde", contests=[1], lang="de")
+```
